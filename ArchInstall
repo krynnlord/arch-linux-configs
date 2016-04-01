@@ -1,0 +1,172 @@
+---------------------
+Arch Linux Install
+---------------------
+
+-------------------------
+Preparing the Hard Drive
+-------------------------
+
+1) Check the drive to install to (eg. /dev/sda)
+
+# fdisk -l 
+
+2) Partition the Drive
+
+# cfdisk
+
+>> create a 2G swap partition and set it to type 82
+>> create another partition for rest and set as bootable
+
+3) Format and set swap
+
+# mkfs.ext4 /dev/sda2
+# mkswap /dev/sda1
+# swapon /dev/sda1
+
+4) Mount the Hard Drive
+
+# mount /dev/sda2 /mnt
+
+----------------------------
+Installing the System Files
+----------------------------
+
+1) Edit the mirrorlist
+
+# nano /etc/pacman.d/mirrorlist
+
+>> choose local mirror and put at top of list
+
+2) Install base
+
+# pacstrap -i /mnt base base-devel
+
+3) Create FStab file
+
+# genfstab -U /mnt > /mnt/etc/fstab
+
+4) Chroot into system
+
+# arch-chroot /mnt /bin/bash
+
+5) Edit locale file
+
+# nano /etc/locale.gen
+
+>> uncomment en_US.UTF-8 then run these 3 things
+
+# locale-gen
+# echo LANG=en_US.UTF-8 > /etc/locale.conf
+# export LANG=en_US.UTF-8
+
+6) Create Timezone Link
+
+# ln -s /usr/share/zoneinfo/America/Chicago > /etc/localtime
+
+7) Set Clock
+
+# hwclock --systohc --utc
+
+-------------------
+Setup Boot Manager
+------------------- 
+
+1) Install Boot loader
+
+# pacman -S grub os-prober
+
+2) Setup
+
+# grub-install --recheck --target=i386-pc /dev/sda
+
+3) Configure Grub
+
+# grub-mkconfig -o /boot/grub/grub.cfg
+
+4) Setup Hostname
+
+# echo archlinux > /etc/hostname
+
+5) Set password and Create RAM disk
+
+# passwd
+# mkinitcpio -p linux
+
+6) Exit Chroot
+
+# exit
+
+7) Unmount partition and Shutdown
+
+# umount -R /mnt
+# shutdown
+
+8) Setup Networking (one or another)
+
+>> Wired 
+# systemctl start dhcpcd@XXXXXX.service
+# systemctl enable dhcpcd@XXXXXXXX.service
+
+>>Wireless
+# systemctl stop dhcpcd@XXXXXXX.service
+# pacman -S iw wpa_supplicant dialog
+# systemctl start dhcpcd@XXXXXX.service
+# systemctl enable dhcpcd@XXXXXXXX.service
+
+--------------------
+Finalizing the Setup
+--------------------
+
+1) Create user
+
+# useradd -m -G wheel,users -s /bin/bash [user]
+# passwd [user]
+
+2) Install Sudo
+
+# pacman -S sudo
+
+3) Give sudo powers
+
+# EDITOR=nano visudo
+
+>> uncomment %wheel ALL=(ALL) ALL
+
+4) Install Bash Completion
+
+# pacman -S bash-completion
+
+5) Configure Repositorys
+
+# nano /etc/pacman.conf
+
+>> uncomment [Multilib]
+
+6) Update
+
+# pacman -Syu
+
+--------------------
+Install Xorg Server
+--------------------
+
+1) Install Xorg
+
+# pacman -S xorg-server xorg-server-utils
+
+2) Install Intel Video Driver ( if needed )
+
+# pacman -S xf86-video-intel
+
+3) Install Touchpad Drivers
+
+# pacman -S xf86-input-synaptics
+
+4) Install i3
+
+# pacman -S i3 dmenu rxvt-unicode
+
+5) reboot
+
+
+Enjoy!

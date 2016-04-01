@@ -1,0 +1,87 @@
+----------------------------------------
+Arch Linux Install - Condensed Version
+----------------------------------------
+
+# fdisk -l 
+
+# cfdisk
+>> create a 2G swap partition and set it to type 82
+>> create another partition for rest and set as bootable
+
+# mkfs.ext4 /dev/sda2
+
+# mkswap /dev/sda1
+
+# swapon /dev/sda1
+
+# mount /dev/sda2 /mnt
+
+# nano /etc/pacman.d/mirrorlist
+>> choose local mirror and put at top of list
+
+# pacstrap -i /mnt base base-devel
+
+# genfstab -U /mnt > /mnt/etc/fstab
+
+# arch-chroot /mnt /bin/bash
+
+# nano /etc/locale.gen
+>> uncomment en_US.UTF-8 then run these 3 things
+
+# locale-gen
+
+# echo LANG=en_US.UTF-8 > /etc/locale.conf
+
+# export LANG=en_US.UTF-8
+
+# ln -s /usr/share/zoneinfo/America/Chicago > /etc/localtime
+
+# hwclock --systohc --utc
+
+# pacman -S grub os-prober
+
+# grub-install --recheck --target=i386-pc /dev/sda
+
+# grub-mkconfig -o /boot/grub/grub.cfg
+
+# echo archlinux > /etc/hostname
+
+# passwd
+
+# mkinitcpio -p linux
+
+# exit
+
+# umount -R /mnt
+
+# shutdown
+
+# systemctl start dhcpcd@XXXXXX.service
+
+# systemctl enable dhcpcd@XXXXXXXX.service
+
+# useradd -m -G wheel,users -s /bin/bash [user]
+
+# passwd [user]
+
+# pacman -S sudo
+
+# EDITOR=nano visudo
+>> uncomment %wheel ALL=(ALL) ALL
+
+# pacman -S bash-completion
+
+# nano /etc/pacman.conf
+>> uncomment [Multilib]
+
+# pacman -Syu
+
+# pacman -S xorg-server xorg-server-utils
+
+# pacman -S xf86-video-intel
+
+# pacman -S xf86-input-synaptics
+
+# pacman -S i3 dmenu rxvt-unicode
+
+# reboot
