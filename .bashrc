@@ -196,4 +196,3 @@ alias starti3='~/Apps/DE/starti3.sh'
 alias startob='~/Apps/DE/startob.sh'
 
 
-screenfetch
