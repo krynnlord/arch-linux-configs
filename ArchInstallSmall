@@ -1,5 +1,5 @@
 ----------------------------------------
-Arch Linux Install - Condensed Version
+Arch Linux Install - Updated Version
 ----------------------------------------
 
 # fdisk -l 
@@ -19,6 +19,11 @@ Arch Linux Install - Condensed Version
 # nano /etc/pacman.d/mirrorlist
 >> choose local mirror and put at top of list
 
+!!!!! IF
+Wifi only run this
+# wifi-menu
+!!!!! End IF
+
 # pacstrap -i /mnt base base-devel
 
 # genfstab -U /mnt > /mnt/etc/fstab
@@ -26,7 +31,7 @@ Arch Linux Install - Condensed Version
 # arch-chroot /mnt /bin/bash
 
 # nano /etc/locale.gen
->> uncomment en_US.UTF-8 then run these 3 things
+>> uncomment en_US.UTF-8
 
 # locale-gen
 
@@ -34,9 +39,9 @@ Arch Linux Install - Condensed Version
 
 # export LANG=en_US.UTF-8
 
-# ln -s /usr/share/zoneinfo/America/Chicago > /etc/localtime
+# ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
 
-# hwclock --systohc --utc
+# hwclock --systohc
 
 # pacman -S grub os-prober
 
@@ -50,15 +55,29 @@ Arch Linux Install - Condensed Version
 
 # mkinitcpio -p linux
 
+!!!!! IF 
+using only wireless you will need these before reboot
+# sudo pacman -S dialog iw_supplicant
+!!!!! End IF
+
 # exit
 
 # umount -R /mnt
 
-# shutdown
+# reboot (remove install media)
 
+# ip a (take note network adapter name)
+
+!!!!! IF 
+Wired
 # systemctl start dhcpcd@XXXXXX.service
-
 # systemctl enable dhcpcd@XXXXXXXX.service
+!!!!! End IF
+
+!!!!! IF
+Wireless
+# wifi-menu
+!!!!! End IF
 
 # useradd -m -G wheel,users -s /bin/bash [user]
 
@@ -72,16 +91,16 @@ Arch Linux Install - Condensed Version
 # pacman -S bash-completion
 
 # nano /etc/pacman.conf
->> uncomment [Multilib]
+>> uncomment [Multilib] and line below
 
 # pacman -Syu
 
-# pacman -S xorg-server xorg-server-utils
+# pacman -S reflector
 
-# pacman -S xf86-video-intel
+# reflector --verbose --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
-# pacman -S xf86-input-synaptics
+# pacman -S xorg-server xorg-xinit
 
-# pacman -S i3 dmenu rxvt-unicode
+# pacman -S i3 rxvt-unicode
 
 # reboot
