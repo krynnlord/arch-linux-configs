@@ -1,0 +1,92 @@
+Minimal instructions for installing Parabola GNU/Linux-libre
+
+# Verify device ID(mine is sda)
+fdisk -l 
+
+# Create partitions
+cfdisk /dev/sda
+/dev/sda1 -> 2GB SWAP partition
+/dev/sda2 -> The rest of the disk (bootable)
+
+# Format the filesystem
+mkfs.ext4 /dev/sda2
+mkswap /dev/sda1
+
+# Mount the filesystems
+mount /dev/sda2 /mnt
+swapon /dev/sda1
+
+# Verification of package signatures
+# Upgrade the package parabola-keyring
+pacman -Sy parabola-keyring
+
+# Select installation mirror by editing the mirrorlist
+nano /etc/pacman.d/mirrorlist
+
+# Install the base system using pacstrap
+pacstrap /mnt
+
+# Generate a fstab file
+genfstab -p /mnt >> /mnt/etc/fstab
+
+# Enter the new system
+arch-chroot /mnt /bin/bash
+
+# Set the hostname
+echo MYHOSTNAME > /etc/hostname
+
+# Set up system clock
+ln -s /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+hwclock --systohc
+
+# Choose the locale(s) 
+nano /etc/locale.gen
+locale-gen
+
+# Set up system-wide locale
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+
+# Set the LANG variable for the ramdisk creation
+export LANG=en_US.UTF-8
+
+# Recreate the initrd image
+mkinitcpio -p linux-libre
+
+# Install and configure GRUB
+pacman -S grub-bios os-prober
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Set password for root
+passwd
+
+# Add a user
+useradd -m -G wheel,users -s /bin/bash MYUSERNAME
+passwd MYUSERNAME
+
+# Exit from chroot, unmount the partitions, and close the device
+exit
+umount -R /mnt
+
+# Reboot into the new system (don't forget to remove the CD/USB/ISO image)
+reboot
+
+# Login as root
+nano /etc/resolv.conf
+add 'nameserver 8.8.8.8' to end of file
+
+# Enable ethernet
+ip a
+# Find the adapter (mine is enp0s3)
+systemctl enable dhcpcd@enp0s3
+systemctl start dhcpcd@enp0s3
+
+# To install VirtualBox Guest
+sudo pacman -S libvirt
+
+# Extras
+pacman -S reflector
+reflector --verbose --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
+pacman -S xorg-server xorg-xinit
+pacman -S i3 rxvt-unicode
