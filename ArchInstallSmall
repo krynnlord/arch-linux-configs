@@ -43,7 +43,7 @@ Wifi only run this
 
 # hwclock --systohc
 
-# pacman -S grub os-prober
+# pacman -S grub
 
 # grub-install --recheck --target=i386-pc /dev/sda
 
@@ -57,7 +57,7 @@ Wifi only run this
 
 !!!!! IF 
 using only wireless you will need these before reboot
-# sudo pacman -S dialog iw_supplicant
+# sudo pacman -S dialog wpa_supplicant net-tools
 !!!!! End IF
 
 # exit
@@ -76,7 +76,7 @@ Wired
 
 !!!!! IF
 Wireless
-# wifi-menu
+# wifi-menu -o
 !!!!! End IF
 
 # useradd -m -G wheel,users -s /bin/bash [user]
